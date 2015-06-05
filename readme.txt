@@ -58,6 +58,11 @@ Syntax: `[key KEY (QUALITY)]`
 
 == Changelog ==
 
+= 1.0.2 =
+* Fixed a bug that placed the control buttons when unneeded
+* Fixed a bug that did not place control buttons on pages (instead of posts)
+* Fixed a bug that caused the print button to not work
+
 = 1.0 =
 * Initial commit
 

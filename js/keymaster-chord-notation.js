@@ -1,4 +1,7 @@
 jQuery(function($){
+    if(typeof KCNhasChords==='undefined'){
+	$('.KCNtranspose').hide();
+    }
     $('.KCNshowHide').click(function(){
 	$('.KCNchordWrap').toggle('slow');
     });

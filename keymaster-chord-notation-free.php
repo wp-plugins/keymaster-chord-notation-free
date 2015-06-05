@@ -5,7 +5,7 @@
 	Description: Easily add chords and lyrics to any WordPress website using shortcodes!  Users can print just the content you choose (the lyrics and chords) instead of a bunch of useless HTML. Admins can choose multiple layout options and the premium version has a ton more features like transposing to any key and unlimited colors.
 	Text Domain: keymaster-chord-notation-free
 	Author: George Rood
-	Version: 1.0.1
+	Version: 1.0.2
 	Author URI: http://intelligentdesignbuffalo.com
 	Demo URI: http://childrensbiblesongs.us/2011/09/oh-how-i-love-jesus/
 	License: GPLv2 or later
@@ -80,6 +80,11 @@ class Keymaster_Chord_Notation_Free {
 	 */
 	private $hook_suffix;
 	
+	/**
+	 *
+	 * @var bool
+	 */
+	private $showed_script;
 	/**
 	 * This runs when the plugin is activated and adds 2 option entries
 	 */
@@ -231,9 +236,6 @@ class Keymaster_Chord_Notation_Free {
 	    echo preg_filter('@[\s]{2}@','',ob_get_clean());
 	}
 
-	public function deactivate_plugin_actions(){
-		// TODO: add any deactivation actions here
-	}	
 	
 	/**
 	 * Load plugin textdomain
@@ -577,12 +579,18 @@ class Keymaster_Chord_Notation_Free {
 		return '';
 	    }
 	    $quality = isset($atts[1])? $atts[1] : '';
-
+	    // This snippet sets a var to tell the rest of the app that we're on a page with a chord shortcode.
+	    if(!$this->showed_script){
+		$this->showed_script = true;
+		$script = "<script>var KCNhasChords = true;</script>";
+	    }else{
+		$script = '';
+	    }
 	    $chordPretty = (strlen($chord)>1&&substr($chord, 1,1)==='b')? strtoupper(substr($chord, 0,1)).'♭' : strtoupper($chord);
 	    $chordClass = str_replace('#', 's', $chord);
 	    $qualityClass = empty($quality)? '' : "-$quality";
 	    $display = isset($this->options['chords_visible_by_default'])? 'inline-block': 'none';
-	    return "<span class='KCNchordWrap' style='display:$display;'><span  class='KCNchord KCNchord-$chordClass$qualityClass'>$chordPretty</span><span class='KCNchordWrapQuality'>$quality</span></span>";
+	    return "<span class='KCNchordWrap' style='display:$display;'><span  class='KCNchord KCNchord-$chordClass$qualityClass'>$chordPretty</span><span class='KCNchordWrapQuality'>$quality</span></span>$script";
 	}
 	/**
 	 * 
@@ -622,7 +630,8 @@ class Keymaster_Chord_Notation_Free {
 	    if(!empty($_content)){
 		$content = $_content;
 	    }
-	    if(is_single()){
+	    if(is_single()||is_page()){
+		$content .= '<script>var KCN_print_selector = "'.  $this->options['print_selector'].'";</script>';
 		if(isset($this->options['content_buttons']['top'])){
 		    $content = do_shortcode('[kcn_buttons auto_included]').$content;
 		}
@@ -638,14 +647,14 @@ class Keymaster_Chord_Notation_Free {
 	 * Power up your frontend with some scripts and a stylesheet
 	 */
 	public function add_javascript(){
-	    wp_register_script( $this->kcn_plugin_slug, plugins_url("js/keymaster-chord-notation.js",__FILE__), array('jquery'), '1.0.1',true );
-	    wp_register_script( $this->kcn_plugin_slug.'_print', plugins_url("js/print-area.jquery.js",__FILE__), array('jquery'), '1.0.1',true );
+	    wp_register_script( $this->kcn_plugin_slug, plugins_url("js/keymaster-chord-notation.js",__FILE__), array('jquery'), '1.0.2',true );
+	    wp_register_script( $this->kcn_plugin_slug.'_print', plugins_url("js/print-area.jquery.js",__FILE__), array('jquery'), '1.0.2',true );
 	    wp_enqueue_script( $this->kcn_plugin_slug );
 	    wp_enqueue_script( $this->kcn_plugin_slug.'_print');
 	    // And our only stylesheet
-	    wp_register_style( $this->kcn_plugin_slug.'_bs1', plugins_url("css/buttons_fixed.css",__FILE__), false, '1.0.1' );
+	    wp_register_style( $this->kcn_plugin_slug.'_bs1', plugins_url("css/buttons_fixed.css",__FILE__), false, '1.0.2' );
 	    wp_enqueue_style( $this->kcn_plugin_slug.'_bs1');	
-	    wp_register_style( $this->kcn_plugin_slug.'_print', plugins_url("css/print.css",__FILE__), false, '1.0.1','print' );
+	    wp_register_style( $this->kcn_plugin_slug.'_print', plugins_url("css/print.css",__FILE__), false, '1.0.2','print' );
 	    wp_enqueue_style( $this->kcn_plugin_slug.'_print');	
 
 	}
