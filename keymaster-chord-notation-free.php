@@ -9,6 +9,8 @@
 	Author URI: http://intelligentdesignbuffalo.com
 	Demo URI: http://childrensbiblesongs.us/2011/09/oh-how-i-love-jesus/
 	License: GPLv2 or later
+ 	Tags: guitar, chords, chord notation, transpose, key, music, lyrics
+
 
 */
 
